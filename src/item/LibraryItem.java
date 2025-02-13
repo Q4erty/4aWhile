@@ -40,4 +40,13 @@ public abstract class LibraryItem {
             System.out.println(title + " wasn't taken.");
         }
     }
+
+    @Override
+    public String toString() {
+        return "LibraryItem{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", available=" + available +
+                '}';
+    }
 }

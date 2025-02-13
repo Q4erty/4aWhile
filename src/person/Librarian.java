@@ -13,11 +13,11 @@ public class Librarian implements person.User {
         this.name = name;
     }
 
-    public void addBook(Storage<LibraryItem> storage, LibraryItem item) {
+    public <T extends LibraryItem> void addBook(Storage<T> storage, T item) {
         storage.save(item);
     }
 
-    public void removeBook(Storage<LibraryItem> storage, int id) {
+    public <T extends LibraryItem> void removeBook(Storage<T> storage, int id) {
         storage.delete(id);
     }
 
