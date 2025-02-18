@@ -16,7 +16,7 @@ public class FileStorage implements Backup{
 
             writer.write("Books:\n");
             for (LibraryItem item : storage.getItems()) {
-                writer.write(item.getTitle() + " | Reserved: " + item.isReserved() + "\n");
+                writer.write(item.getTitle() + " | Available: " + item.isAvailable() + "\n");
             }
 
             writer.write("Users:\n");

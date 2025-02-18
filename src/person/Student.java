@@ -15,11 +15,11 @@ public class Student implements person.User, person.StudentAbility {
 
     private final List<LibraryItem> borrowedBooks = new ArrayList<>();
 
-    private List<Reservation> reservations = new ArrayList<>();
+    private final List<Reservation> reservations = new ArrayList<>();
 
     private double fine;
 
-    private UserHistory history = new UserHistory();
+    private final UserHistory history = new UserHistory();
 
 
     public Student(String name) {
@@ -36,19 +36,23 @@ public class Student implements person.User, person.StudentAbility {
     }
 
     public void reserveBook(LibraryItem item) {
-        if (!item.isReserved()) {
+        if (!item.isAvailable()) {
             Reservation reservation = new Reservation(this, item);
             reservations.add(reservation);
-            item.setReserved(true);
+            item.setAvailable(false);
             System.out.println(name + " reserved " + item.getTitle());
         } else {
             System.out.println("Book is already reserved.");
         }
     }
 
-    public void returnBook(LibraryItem item) {
-        borrowedBooks.remove(item);
-        history.addEntry(item, "returned");
+    public void returnBook(LibraryItem itemP) {
+        LibraryItem item = borrowedBooks.get(itemP.getId());
+        if (item != null) {
+            itemP.setAvailable(true);
+            borrowedBooks.remove(item);
+            history.addEntry(item, "returned");
+        }
     }
 
     public void payFine(double amount) {
@@ -58,5 +62,9 @@ public class Student implements person.User, person.StudentAbility {
     @Override
     public void notify(String message) {
         System.out.println(name + " get norification: " + message);
+    }
+
+    public void getHistory() {
+        history.getTransactions().forEach(System.out::println);
     }
 }

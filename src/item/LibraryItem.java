@@ -8,7 +8,7 @@ public abstract class LibraryItem implements Identifiable {
 
     private String title;
 
-    private boolean reserved = true;
+    private boolean available = true;
 
     public LibraryItem(int id, String title) {
         this.id = id;
@@ -23,17 +23,17 @@ public abstract class LibraryItem implements Identifiable {
         return title;
     }
 
-    public boolean isReserved() {
-        return reserved;
+    public boolean isAvailable() {
+        return available;
     }
 
-    public void setReserved(boolean reserved) {
-        this.reserved = reserved;
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 
     public void getItem() {
-        if (reserved) {
-            setReserved(false);
+        if (available) {
+            setAvailable(false);
             System.out.println(title + " borrowed.");
         } else {
             System.out.println(title + " is already taken.");
@@ -41,8 +41,8 @@ public abstract class LibraryItem implements Identifiable {
     }
 
     public void returnItem() {
-        if (!reserved) {
-            setReserved(true);
+        if (!available) {
+            setAvailable(true);
             System.out.println(title + " returned.");
         } else {
             System.out.println(title + " wasn't taken.");
@@ -54,7 +54,7 @@ public abstract class LibraryItem implements Identifiable {
         return "LibraryItem{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
-                ", available=" + reserved +
+                ", available=" + available +
                 '}';
     }
 }

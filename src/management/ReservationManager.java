@@ -14,10 +14,10 @@ public class ReservationManager {
     public void checkExpiredReservations() {
         reservations.removeIf(reservation -> {
             if (reservation.isExpired()) {
-                reservation.getItem().setReserved(false);
-                return true;
+                reservation.getItem().setAvailable(true);
+                return false;
             }
-            return false;
+            return true;
         });
     }
 }
