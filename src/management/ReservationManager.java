@@ -15,9 +15,9 @@ public class ReservationManager {
         reservations.removeIf(reservation -> {
             if (reservation.isExpired()) {
                 reservation.getItem().setAvailable(true);
-                return false;
+                return true;
             }
-            return true;
+            return false;
         });
     }
 }

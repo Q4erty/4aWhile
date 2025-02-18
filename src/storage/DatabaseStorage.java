@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class DatabaseStorage implements Storage<User> {
+public class DatabaseStorage implements Storage<User> {
 
     private final Map<Integer, User> database = new HashMap<>();
 

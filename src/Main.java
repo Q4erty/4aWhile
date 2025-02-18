@@ -2,81 +2,112 @@ import fine.FixedPenaltyCalculator;
 import fine.PenaltyCalculator;
 import fine.ProgressivePenaltyCalculator;
 import item.Book;
+import item.DVD;
+import item.LibraryItem;
+import item.Magazine;
+import management.Reservation;
 import management.ReservationManager;
 import management.Statistics;
 import notification.EmailNotificationService;
 import notification.NotificationService;
 import notification.PushNotificationService;
+import notification.SMSNotificationService;
+import person.Admin;
+import person.Librarian;
 import person.Student;
-import storage.Backup;
-import storage.FileStorage;
-import storage.InMemoryStorage;
-import storage.Storage;
+import storage.*;
 
 public class Main {
     public static void main(String[] args) {
-        // Создаем пользователей
-        Student student1 = new Student("Alice");
-        Student student2 = new Student("Bob");
-
-        // Создаем книги
-        Book book1 = new Book(1, "The Great Gatsby");
-        Book book2 = new Book(2, "1984");
-        Book book3 = new Book(3, "Moby Dick");
-
-        // Создаем систему хранения данных
-        Storage inMemoryStorage = new InMemoryStorage();
+        // ========== Инициализация систем ==========
+        // Хранилища
+        Storage<LibraryItem> inMemoryStorage = new InMemoryStorage<>();
+        DatabaseStorage userDatabase = new DatabaseStorage();
         Backup fileStorage = new FileStorage();
 
-        // Создаем систему уведомлений
+        // Уведомления
         NotificationService emailService = new EmailNotificationService();
         NotificationService pushService = new PushNotificationService();
+        NotificationService smsService = new SMSNotificationService();
 
-        // Пользователи резервируют книги
-        student1.reserveBook(book1);
-        student2.reserveBook(book2);
-        student1.reserveBook(book2);
-
-        // Пользователи возвращают книги
-        student1.returnBook(book1);
-        student2.returnBook(book3);
-
-        // Проверяем историю пользователя
-        System.out.println("История Alice: ");
-        student1.getHistory();
-        System.out.println("История Bob: ");
-        student2.getHistory();
-
-        // Проверяем систему штрафов
+        // Штрафные калькуляторы
         PenaltyCalculator fixedCalculator = new FixedPenaltyCalculator();
         PenaltyCalculator progressiveCalculator = new ProgressivePenaltyCalculator();
 
-        long overdueDays = 7;
-        double fine1 = fixedCalculator.calculateFine(overdueDays);
-        double fine2 = progressiveCalculator.calculateFine(overdueDays);
-
-        System.out.println("Штраф по фиксированной системе за " + overdueDays + " дней: " + fine1);
-        System.out.println("Штраф по прогрессивной системе за " + overdueDays + " дней: " + fine2);
-
-        // Пользователь оплачивает штраф
-        student1.payFine(fine1);
-
-        // Сохраняем данные
-
-        // Уведомляем пользователей
-        emailService.sendNotification(student2, "Ваша книга просрочена!");
-        pushService.sendNotification(student1, "Новый доступный том: Moby Dick");
-
-        // Проверяем авто-отмену резерваций
+        // Менеджер резерваций
         ReservationManager reservationManager = new ReservationManager();
-        reservationManager.checkExpiredReservations();
 
-        // Отслеживание статистики популярных книг
-        Statistics statistics = new Statistics();
-        statistics.recordBorrow(book1);
-        statistics.recordBorrow(book2);
-        statistics.recordBorrow(book1);
-        statistics.recordBorrow(book3);
-        statistics.printStatistics();
+        // ========== Создание сущностей ==========
+        // Пользователи
+        Student student1 = new Student("Alice");
+        Student student2 = new Student("Bob");
+        Admin admin = new Admin("Chief Admin");
+        Librarian librarian = new Librarian("Main Librarian");
+
+        // Книги и другие материалы
+        Book book1 = new Book(1, "The Great Gatsby");
+        DVD dvd1 = new DVD(2, "Matrix DVD");
+        Magazine magazine1 = new Magazine(3, "National Geographic");
+
+        // ========== Тестирование функционала ==========
+        // 1. Администратор управляет пользователями
+        admin.addUser(userDatabase, student1);
+        admin.addUser(userDatabase, student2);
+        admin.watchUsers(inMemoryStorage); // Демонстрация полиморфизма
+
+        // 2. Библиотекарь управляет коллекцией
+        librarian.addBook(inMemoryStorage, book1);
+        librarian.addBook(inMemoryStorage, dvd1); // Проверка работы с разными типами
+        librarian.addBook(inMemoryStorage, magazine1);
+        librarian.removeBook(inMemoryStorage, 2);
+
+        // 3. Работа с резервациями
+        student1.reserveBook(book1);
+        student2.reserveBook(book1); // Попытка резервации занятой книги
+        reservationManager.addReservation(new Reservation(student1, book1));
+
+        // 4. Возврат и история операций
+        book1.getItem(); // Alice borrows
+        book1.returnItem();
+        student1.returnBook(book1);
+
+        // 5. Тестирование всех типов уведомлений
+        emailService.sendNotification(student1, "Проверка email-уведомления");
+        pushService.sendNotification(student2, "Проверка push-уведомления");
+        smsService.sendNotification(student1, "Проверка SMS-уведомления");
+
+        // 6. Штрафные системы
+        System.out.println("\n=== Тестирование штрафов ===");
+        long[] testDays = {3, 7, 10};
+        for (long days : testDays) {
+            System.out.printf("Фиксированный штраф за %d дней: %.1f руб.%n",
+                    days, fixedCalculator.calculateFine(days));
+            System.out.printf("Прогрессивный штраф за %d дней: %.1f руб.%n%n",
+                    days, progressiveCalculator.calculateFine(days));
+        }
+
+        // 7. Статистика использования
+        Statistics stats = new Statistics();
+        stats.recordBorrow(book1);
+        stats.recordBorrow(book1);
+        stats.printStatistics();
+
+        // 8. Работа с бэкапами
+        System.out.println("\n=== Тестирование бэкапов ===");
+        fileStorage.saveData((InMemoryStorage<LibraryItem>) inMemoryStorage, userDatabase);
+        fileStorage.loadData();
+
+        // 9. Автоматическая отмена резерваций
+        System.out.println("\n=== Автоотмена резерваций ===");
+        reservationManager.checkExpiredReservations();
+        System.out.println("Статус книги после отмены: " + book1.isAvailable());
+
+        // 10. Тестирование специальных сценариев
+        System.out.println("\n=== Специальные тесты ===");
+        // Попытка вернуть не бракованную книгу
+        book1.returnItem();
+        // Просмотр истории пользователя
+        System.out.println("\nИстория Alice:");
+        student1.getHistory();
     }
 }
