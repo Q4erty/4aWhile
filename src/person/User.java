@@ -7,4 +7,5 @@ public interface User {
     String getName();
 
     void notify(String message);
+
 }

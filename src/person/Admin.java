@@ -3,8 +3,6 @@ package person;
 import item.LibraryItem;
 import storage.Storage;
 
-import java.util.Scanner;
-
 public class Admin implements User {
 
     private int id;

@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InMemoryStorage<T extends Identifiable> implements Storage<T> {
-    private final List<T> items = new ArrayList<>();
+
+    public final List<T> items = new ArrayList<>();
 
     @Override
     public void save(T item) {
@@ -31,5 +32,9 @@ public class InMemoryStorage<T extends Identifiable> implements Storage<T> {
     public void delete(int id) {
         items.removeIf(item -> item.getId() == id);
         System.out.println("Item with ID " + id + " removed.");
+    }
+
+    public List<T> getItems() {
+        return items;
     }
 }

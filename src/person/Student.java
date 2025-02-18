@@ -1,12 +1,26 @@
 package person;
 
 import item.LibraryItem;
+import management.Reservation;
+import management.UserHistory;
 
-public class Student implements person.User {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Student implements person.User, person.StudentAbility {
 
     private int id;
 
     private String name;
+
+    private final List<LibraryItem> borrowedBooks = new ArrayList<>();
+
+    private List<Reservation> reservations = new ArrayList<>();
+
+    private double fine;
+
+    private UserHistory history = new UserHistory();
+
 
     public Student(String name) {
         this.name = name;
@@ -21,12 +35,24 @@ public class Student implements person.User {
         return name;
     }
 
-    public void borrowBook(LibraryItem item) {
-        item.getItem();
+    public void reserveBook(LibraryItem item) {
+        if (!item.isReserved()) {
+            Reservation reservation = new Reservation(this, item);
+            reservations.add(reservation);
+            item.setReserved(true);
+            System.out.println(name + " reserved " + item.getTitle());
+        } else {
+            System.out.println("Book is already reserved.");
+        }
     }
 
     public void returnBook(LibraryItem item) {
-        item.returnItem();
+        borrowedBooks.remove(item);
+        history.addEntry(item, "returned");
+    }
+
+    public void payFine(double amount) {
+        fine -= amount;
     }
 
     @Override

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 class DatabaseStorage implements Storage<User> {
+
     private final Map<Integer, User> database = new HashMap<>();
 
     @Override
@@ -39,5 +40,9 @@ class DatabaseStorage implements Storage<User> {
         } else {
             System.out.println("ID " + id + " not found in database.");
         }
+    }
+
+    public Map<Integer, User> getDatabase() {
+        return database;
     }
 }

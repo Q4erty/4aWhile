@@ -37,8 +37,8 @@ public class Main {
         librarian.addBook(dvdStorage, dvd2);
 
         System.out.println("\n\nBorrowing book: \n");
-        student.borrowBook(book1);
-        student.borrowBook(book1);
+        student.reserveBook(book1);
+        student.reserveBook(book1);
 
         System.out.println("\n\nReturning book: \n");
         student.returnBook(book1);
