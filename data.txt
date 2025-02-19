@@ -1,0 +1,6 @@
+Library Data Backup
+Books:
+The Great Gatsby | Available: true
+National Geographic | Available: true
+Users:
+Student{id=0, name='Bob', borrowedBooks=[], reservations=[], fine=0.0, history=UserHistory{transactions=[]}}

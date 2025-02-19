@@ -8,4 +8,5 @@ public interface User {
 
     void notify(String message);
 
+    String toString();
 }

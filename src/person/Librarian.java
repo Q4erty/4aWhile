@@ -35,4 +35,12 @@ public class Librarian implements person.User {
     public void notify(String message) {
         System.out.println(name + " get notification: " + message);
     }
+
+    @Override
+    public String toString() {
+        return "Librarian{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

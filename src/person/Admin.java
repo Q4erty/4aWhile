@@ -39,4 +39,12 @@ public class Admin implements User {
     public void notify(String message) {
         System.out.println(name + " get notification: " + message);
     }
+
+    @Override
+    public String toString() {
+        return "Admin{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

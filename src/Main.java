@@ -21,7 +21,7 @@ public class Main {
     public static void main(String[] args) {
         // ========== Инициализация систем ==========
         // Хранилища
-        Storage<LibraryItem> inMemoryStorage = new InMemoryStorage<>();
+        InMemoryStorage<LibraryItem> inMemoryStorage = new InMemoryStorage<>();
         DatabaseStorage userDatabase = new DatabaseStorage();
         Backup fileStorage = new FileStorage();
 
@@ -67,9 +67,8 @@ public class Main {
         reservationManager.addReservation(new Reservation(student1, book1));
 
         // 4. Возврат и история операций
-        book1.getItem(); // Alice borrows
-        book1.returnItem();
-        student1.returnBook(book1);
+        student1.borrowBook(book1); // Alice borrows
+        student1.returnBook(book1); // Alice returns
 
         // 5. Тестирование всех типов уведомлений
         emailService.sendNotification(student1, "Проверка email-уведомления");
@@ -94,7 +93,7 @@ public class Main {
 
         // 8. Работа с бэкапами
         System.out.println("\n=== Тестирование бэкапов ===");
-        fileStorage.saveData((InMemoryStorage<LibraryItem>) inMemoryStorage, userDatabase);
+        fileStorage.saveData(inMemoryStorage, userDatabase);
         fileStorage.loadData();
 
         // 9. Автоматическая отмена резерваций

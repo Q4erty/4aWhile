@@ -35,6 +35,17 @@ public class Student implements person.User, person.StudentAbility {
         return name;
     }
 
+    public void borrowBook(LibraryItem item) {
+        if (item.isAvailable()) {
+            item.getItem();
+            borrowedBooks.add(item);
+            history.addEntry(item, "borrowed");
+            System.out.println(name + " borrowed " + item.getTitle());
+        } else {
+            System.out.println("Item is not available for borrowing.");
+        }
+    }
+
     public void reserveBook(LibraryItem item) {
         if (!item.isAvailable()) {
             Reservation reservation = new Reservation(this, item);
@@ -46,12 +57,21 @@ public class Student implements person.User, person.StudentAbility {
         }
     }
 
-    public void returnBook(LibraryItem itemP) {
-        LibraryItem item = borrowedBooks.get(itemP.getId());
-        if (item != null) {
-            itemP.setAvailable(true);
-            borrowedBooks.remove(item);
-            history.addEntry(item, "returned");
+    public void returnBook(LibraryItem item) {
+        LibraryItem itemToReturn = null;
+        for (LibraryItem borrowed : borrowedBooks) {
+            if (borrowed.getId() == item.getId()) {
+                itemToReturn = borrowed;
+                break;
+            }
+        }
+        if (itemToReturn != null) {
+            itemToReturn.returnItem();
+            borrowedBooks.remove(itemToReturn);
+            history.addEntry(itemToReturn, "returned");
+            System.out.println(name + " returned " + itemToReturn.getTitle());
+        } else {
+            System.out.println("Item not found in borrowed items.");
         }
     }
 
@@ -66,5 +86,17 @@ public class Student implements person.User, person.StudentAbility {
 
     public void getHistory() {
         history.getTransactions().forEach(System.out::println);
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", borrowedBooks=" + borrowedBooks +
+                ", reservations=" + reservations +
+                ", fine=" + fine +
+                ", history=" + history +
+                '}';
     }
 }
